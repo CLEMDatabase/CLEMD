@@ -1,0 +1,88 @@
+clear; clc; close all; % clear:clean workspace, clc:clean command window, close all:close all currently open figures
+
+%% -------------- Load data data -------------------------------
+%Download the CSV files of each circuit and the aggregate data from (Website) 
+%and upload the CSV files from 4 Oct to 11 Oct folder.
+%You may change the data files from the folders. In this code, we will use the fourth folder for data visualization.
+
+DBTG= readtable('DB TG.csv'); % The raw data of DB TG 
+DBT1= readtable('DB T1.csv'); % The raw data of DB T1 
+DBML1= readtable('DB ML 1.csv'); % The raw data of DB ML1 
+DBML2= readtable('DB ML 2.csv'); % The raw data of DB ML2 
+CPAC= readtable('CP AC.csv'); % The raw data of CP AC 
+EMSB1= readtable('EMSB 1.csv'); % The raw data of EMSB1 
+SSBMF= readtable('SSB MF.csv'); % The raw data of SSB MF 
+Agg= readtable('Aggregate.csv'); % The raw data of aggregate power 
+
+
+%% -------------- % The raw data of Phase A, B, and C -----------------
+% The data in Excel files includes several parameters. Create the odd harmonics data in separate tables for each phase.
+% index of columns which need to be considered for phase A, B, and C
+% the columns represent THD, 3rd, 5th, 7th, 9th, 11th, 13th, and 15th harmonics
+A = [24, 32:4:56]; 
+B = [25, 33:4:57];
+C = [26, 34:4:58];
+
+%Create the odd harmonics for current data in separate tables for Phase A
+DBTGA=DBTG{:,A};
+DBT1A=DBT1{:,A};
+DBML1A=DBML1{:,A};
+DBML2A=DBML2{:,A};
+CPACA=CPAC{:,A};
+EMSB1A=EMSB1{:,A};
+SSBMFA=SSBMF{:,A};
+AggA=Agg{:,A};
+
+%Create the odd harmonics for current data in separate tables for Phase B
+DBTGB=DBTG{:,B};
+DBT1B=DBT1{:,B};
+DBML1B=DBML1{:,B};
+DBML2B=DBML2{:,B};
+CPACB=CPAC{:,B};
+EMSB1B=EMSB1{:,B};
+SSBMFB=SSBMF{:,B};
+AggB=Agg{:,B};
+
+%Create the odd harmonics for current data in separate tables for Phase C
+DBTGC=DBTG{:,C};
+DBT1C=DBT1{:,C};
+DBML1C=DBML1{:,C};
+DBML2C=DBML2{:,C};
+CPACC=CPAC{:,C};
+EMSB1C=EMSB1{:,C};
+SSBMFC=SSBMF{:,C};
+AggC=Agg{:,C};
+
+%% -------------- Plotting the bar graph of main and sub-meter circuits -----------------------
+
+% We will elucidate the box plots for measured circuits and main in the building
+%Place the data into a cell array and then loop through the cell array
+%Based on Phase A=dataA, B=dataB, and C=dataC
+dataA = {DBTGA, DBT1A, DBML1A, DBML2A, CPACA, EMSB1A, SSBMFA, AggA};
+dataB = {DBTGB, DBT1B, DBML1B, DBML2B, CPACB, EMSB1B, SSBMFB, AggB};
+dataC = {DBTGC, DBT1C, DBML1C, DBML2C, CPACC, EMSB1C, SSBMFC, AggC};
+titles = {'DB TG','DB T1','DB ML 1','DB ML 2','CP AC','EMSB 1','SSB MF','Aggregate'}; %Place the titles into a cell array
+xlables = ["THD" 3 5 7 9 11 13 15]; %label the x-axis for the order of the harmonics
+
+%this loop calculates the average of each harmonic for each circuit based on phase A, B and C
+for i = 1:numel(dataA)
+    dataA{i}=mean(dataA{i});
+    dataB{i}=mean(dataB{i});
+    dataC{i}=mean(dataC{i});
+end
+
+for i = 1:numel(dataA) %the number of loops can be named in which cell array because all have the same number. dataA = dataB = dataC = 8
+
+    subplot(3,3,i) % create the sub-plot with 3 rows and 3 columns
+    % plot the bar graph of circuit 1 to circuit 7 and the aggregate current harmonics
+    %the figure has multiple bars due to having three phases
+    bar([dataA{i};dataB{i};dataC{i}].')
+    xticklabels(xlables)
+    xlabel({'Harmonic Order'},'FontSize', 10)
+    ylabel({'% of fundamental'},'FontSize', 10)
+    title(titles{i},'FontSize', 10)
+    grid, grid minor
+
+end
+legend({'Phase A','Phase B','Phase C'},'NumColumns',3) %Put three legends and the names are Phase A, B, and C
+

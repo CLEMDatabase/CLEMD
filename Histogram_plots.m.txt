@@ -1,0 +1,99 @@
+clear; clc; close all; % clear:clean workspace, clc:clean command window, close all:close all currently open figures
+
+%% -------------- Import data -------------------------------
+%Download the CSV files of each circuit and the aggregate data from (Website) 
+%and upload the CSV files from 4 Oct to 11 Oct folder.
+%You may change the data files from the folders. In this code, we will use the fourth folder for data visualization.
+
+DBTG= readtable('DB TG.csv'); % The raw data of DB TG 
+DBT1= readtable('DB T1.csv'); % The raw data of DB T1 
+DBML1= readtable('DB ML 1.csv'); % The raw data of DB ML1 
+DBML2= readtable('DB ML 2.csv'); % The raw data of DB ML2 
+CPAC= readtable('CP AC.csv'); % The raw data of CP AC 
+EMSB1= readtable('EMSB 1.csv'); % The raw data of EMSB1 
+SSBMF= readtable('SSB MF.csv'); % The raw data of SSB MF 
+Agg= readtable('Aggregate.csv'); % The raw data of aggregate power 
+
+% The data in CSV files includes several parameters. 
+% Make the active power data based on phase A in separate tables.
+% Active power columns: phase A= 12; phase B= 13; phase C= 14.
+TGA=DBTG{:,12};
+T1A=DBT1{:,12};
+ML1A=DBML1{:,12};
+ML2A=DBML2{:,12};
+ACA=CPAC{:,12};
+EMSB1A=EMSB1{:,12};
+MFA=SSBMF{:,12};
+AggA=Agg{:,12};
+
+%Create the active power data in separate tables for Phase B
+TGB=DBTG{:,13};
+T1B=DBT1{:,13};
+ML1B=DBML1{:,13};
+ML2B=DBML2{:,13};
+ACB=CPAC{:,13};
+EMSB1B=EMSB1{:,13};
+MFB=SSBMF{:,13};
+AggB=Agg{:,13};
+
+%Create the active power data in separate tables for Phase C
+TGC=DBTG{:,14};
+T1C=DBT1{:,14};
+ML1C=DBML1{:,14};
+ML2C=DBML2{:,14};
+ACC=CPAC{:,14};
+EMSB1C=EMSB1{:,14};
+MFC=SSBMF{:,14};
+AggC=Agg{:,14};
+
+%% -------------- Plotting the histogram of aggregate circuit and individual circuits -----------------------
+
+% We will elucidate the histogram plots for measured circuits and aggregate in the building
+%Place the data into a cell array and then loop through the cell array based on each phase
+dataA = {TGA, T1A, ML1A, ML2A, ACA, EMSB1A, MFA, AggA}; 
+dataB = {TGB, T1B, ML1B, ML2B, ACB, EMSB1B, MFB, AggB};
+dataC = {TGC, T1C, ML1C, ML2C, ACC, EMSB1C, MFC, AggC};
+%Place the titles into a cell array
+titles = {'DB TG','DB T1','DB ML 1','DB ML 2','CP AC','EMSB 1','SSB MF','Aggregate power'}; 
+
+%Phase A
+% make a loop to go through each circuit data and draw the sub-plots in one figure by using the cell array
+for i = 1:numel(dataA)
+
+    % plot histogram from circuit 1 to circuit 7 and the agregate power based on phase A
+    subplot(3,3,i) % create the sub-plot with 3 rows and 3 columns; i represents data number
+    histogram(dataA{i},'NumBins',10,'FaceColor','b') % set bin number to 15 and the color is blue = b
+    xlabel({'Active power (W)'},'FontSize', 9) 
+    ylabel({'Count'},'FontSize', 9)
+    title(titles{i},'FontSize', 9) %name the title based on the name of the circuit data from the cell array
+    grid, grid minor
+
+end
+
+%Phase B
+figure
+for i = 1:numel(dataB)
+
+    % plot histogram from circuit 1 to circuit 7 and the agregate power based on phase B
+    subplot(3,3,i)
+    histogram(dataB{i},'NumBins',10,'FaceColor','b')
+    xlabel({'Active power (W)'},'FontSize', 9)
+    ylabel({'Count'},'FontSize', 9)
+    title(titles{i},'FontSize', 9)
+    grid, grid minor
+
+end
+
+%Phase C
+figure
+for i = 1:numel(dataC)
+
+    % plot histogram from circuit 1 to circuit 7 and the agregate power based on phase C
+    subplot(3,3,i)
+    histogram(dataC{i},'NumBins',10,'FaceColor','b') 
+    xlabel({'Active power (W)'},'FontSize', 9)
+    ylabel({'Count'},'FontSize', 9)
+    title(titles{i},'FontSize', 9)
+    grid, grid minor
+
+end

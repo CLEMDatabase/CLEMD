@@ -1,0 +1,159 @@
+clear; clc; close all; % clear:clean workspace, clc:clean command window, close all:close all currently open figures
+
+%% -------------- Load data data -------------------------------
+%Download the CSV files of each circuit and the aggregate data from (Website) 
+%and upload the CSV files from 4 Oct to 11 Oct folder.
+%You may change the data files from the folders. In this code, we will use the fourth folder for data visualization.
+
+DBTG= readtable('DB TG.csv'); % The raw data of DB TG 
+DBT1= readtable('DB T1.csv'); % The raw data of DB T1 
+DBML1= readtable('DB ML 1.csv'); % The raw data of DB ML1 
+DBML2= readtable('DB ML 2.csv'); % The raw data of DB ML2 
+CPAC= readtable('CP AC.csv'); % The raw data of CP AC 
+EMSB1= readtable('EMSB 1.csv'); % The raw data of EMSB1 
+SSBMF= readtable('SSB MF.csv'); % The raw data of SSB MF 
+Agg= readtable('Aggregate.csv'); % The raw data of aggregate power 
+
+%% -------------- % The raw data of Phase A, B, C-----------------
+
+% The data in CSV files includes several parameters. Create the current (A) data in separate tables for each phase.
+
+%Create the current (A) data in separate tables for Phase A
+% Current columns: phase A= 7; phase B= 8; phase C= 9.
+TGA=DBTG{345900:432302,7}; %set the samples of Monday (9 /10) from 345601 to 432601
+T1A=DBT1{345900:432302,7};
+ML1A=DBML1{345900:432302,7};
+ML2A=DBML2{345900:432302,7};
+ACA=CPAC{345900:432302,7};
+EMSB1A=EMSB1{345900:432302,7};
+MFA=SSBMF{345900:432302,7};
+AggA=Agg{345900:432302,7};
+
+%Create the current (A) data in separate tables for Phase B
+
+TGB=DBTG{345900:432302,8};
+T1B=DBT1{345900:432302,8};
+ML1B=DBML1{345900:432302,8};
+ML2B=DBML2{345900:432302,8};
+ACB=CPAC{345900:432302,8};
+EMSB1B=EMSB1{345900:432302,8};
+MFB=SSBMF{345900:432302,8};
+AggB=Agg{345900:432302,8};
+
+%Create the current (A) data in separate tables for Phase C
+
+TGC=DBTG{345900:432302,9};
+T1C=DBT1{345900:432302,9};
+ML1C=DBML1{345900:432302,9};
+ML2C=DBML2{345900:432302,9};
+ACC=CPAC{345900:432302,9};
+EMSB1C=EMSB1{345900:432302,9};
+MFC=SSBMF{345900:432302,9};
+AggC=Agg{345900:432302,9};
+
+%% -------------- Sampling frequency, time, and number of samples -----------------------
+
+fs=1;  % interval frequency 
+ts=1/fs;  % interval time is 1 second
+L=length(AggA);   % The length of the signal. All data has equal samples
+t=(0:L-1)/fs;  % The time require for block data t=N/fs 
+hold on
+N=numsamples(t);   % The number of the samples is 86403 = (24h*60min*60sec)+10min*60sec for one day 
+
+%% -------------- % Analyzing Daily Current Patterns-----------------
+
+% To visualize the current patterns data in the dataset, we will create line plots for both circuits and the aggregate circuit. 
+%In the plot, the x-axis represents the readings of samples recorded during one day, 
+% while the y-axis corresponds to the current parameter.
+
+% plot the current data from circuit 1 to circuit 7 and the aggregate circuit
+subplot(4,2,1) % create the sub-plot with 4 rows and 2 column
+plot(t,TGA,t,TGB,t,TGC) % plot the current of DB TG based on phase A, B, and C
+xticks([0 14400 28800 43200 57600 72000 86400]) % Creat xticks at every 4 hours
+xticklabels({'00:00','04:00','08:00','12:00','16:00', '20:00', '23:59'}) 
+ylabel('Current (A)') %Label the y-axis as current parameter
+title('DB TG') %name the title based on the name of the circuit data
+x=[14400 28800 43200 57600 72000]; % Draw a vertical dashed line for every 4 hours
+xline(x,'--k')
+legend({'Phase A','Phase B','Phase C'},'NumColumns',3) %Put three legends and the names are Phase A, B, and C
+grid, grid minor
+axis tight
+
+subplot(4,2,2)
+plot(t,T1A,t,T1B,t,T1C) % plot the current of DB T1
+xticks([0 14400 28800 43200 57600 72000 86400])
+xticklabels({'00:00','04:00','08:00','12:00','16:00', '20:00', '23:59'})
+ylabel('Current (A)')
+title('DB T1')
+x=[14400 28800 43200 57600 72000]; 
+xline(x,'--k')
+grid, grid minor
+axis tight
+
+subplot(4,2,3)
+plot(t,ML1A,t,ML1B,t,ML1C) % plot the current of DB ML1
+xticks([0 14400 28800 43200 57600 72000 86400])
+xticklabels({'00:00','04:00','08:00','12:00','16:00', '20:00', '23:59'}) 
+ylabel('Current (A)')
+title('DB ML 1')
+x=[14400 28800 43200 57600 72000]; 
+xline(x,'--k')
+grid, grid minor
+axis tight
+
+subplot(4,2,4)
+plot(t,ML2A,t,ML2B,t,ML2C) % plot the current of DB ML2
+xticks([0 14400 28800 43200 57600 72000 86400]) 
+xticklabels({'00:00','04:00','08:00','12:00','16:00', '20:00', '23:59'})
+ylabel('Current (A)')
+title('DB ML 2')
+x=[14400 28800 43200 57600 72000]; 
+xline(x,'--k')
+grid, grid minor
+axis tight
+
+subplot(4,2,5)
+plot(t,ACA,t,ACB,t,ACC) % plot the current of CP AC
+xticks([0 14400 28800 43200 57600 72000 86400]) 
+xticklabels({'00:00','04:00','08:00','12:00','16:00', '20:00', '23:59'}) 
+ylabel('Current (A)')
+title('CP AC')
+x=[14400 28800 43200 57600 72000]; 
+xline(x,'--k')
+grid, grid minor
+axis tight
+
+subplot(4,2,6)
+plot(t,EMSB1A,t,EMSB1B,t,EMSB1C) % plot the current of EMSB1
+xticks([0 14400 28800 43200 57600 72000 86400]) 
+xticklabels({'00:00','04:00','08:00','12:00','16:00', '20:00', '23:59'}) 
+ylabel('Current (A)')
+title('EMSB 1')
+x=[14400 28800 43200 57600 72000]; 
+xline(x,'--k')
+grid, grid minor
+axis tight
+
+subplot(4,2,7)
+plot(t,MFA,t,MFB,t,MFC) % plot the current of SSB MF
+xticks([0 14400 28800 43200 57600 72000 86400]) 
+xticklabels({'00:00','04:00','08:00','12:00','16:00', '20:00', '23:59'}) 
+ylabel('Current (A)')
+xlabel('Time (sec)')
+title('SSB MF')
+x=[14400 28800 43200 57600 72000]; 
+xline(x,'--k')
+grid, grid minor
+axis tight
+
+subplot(4,2,8)
+plot(t,AggA,t,AggB,t,AggC)
+xticks([0 14400 28800 43200 57600 72000 86400]) 
+xticklabels({'00:00','04:00','08:00','12:00','16:00', '20:00', '23:59'}) 
+ylabel('Current (A)')
+xlabel('Time (sec)')
+title('Aggregate')
+x=[14400 28800 43200 57600 72000]; 
+xline(x,'--k')
+grid, grid minor
+axis tight
