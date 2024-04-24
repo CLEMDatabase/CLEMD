@@ -1,0 +1,76 @@
+clear; clc; close all; % clear:clean workspace, clc:clean command window, close all:close all currently open figures
+
+%% -------------- Load data -------------------------------
+%Download the CSV files of each circuit and the aggregate data from (Website) 
+%and upload the CSV files from 4 Oct to 11 Oct folder.
+%You may change the data files from the folders. In this code, we will use the fourth folder for data visualization.
+
+DBTG= readtable('DB TG.csv'); % The raw data of DB TG 
+DBT1= readtable('DB T1.csv'); % The raw data of DB T1 
+DBML1= readtable('DB ML 1.csv'); % The raw data of DB ML1 
+DBML2= readtable('DB ML 2.csv'); % The raw data of DB ML2 
+CPAC= readtable('CP AC.csv'); % The raw data of CP AC 
+EMSB1= readtable('EMSB 1.csv'); % The raw data of EMSB1 
+SSBMF= readtable('SSB MF.csv'); % The raw data of SSB MF 
+Agg= readtable('Aggregate.csv'); % The raw data of aggregate power 
+
+%% -------------- % The raw data of Phase A, B, and C-----------------
+
+% The data in Excel files includes several parameters. 
+% real power columns: phase A= 12; phase B= 13; phase C= 14.
+% Create the maximum value of active power based on phase A in separate tables.
+TGA=max(DBTG{:,12});
+T1A=max(DBT1{:,12});
+ML1A=max(DBML1{:,12});
+ML2A=max(DBML2{:,12});
+ACA=max(CPAC{:,12});
+EMSB1A=max(EMSB1{:,12});
+MFA=max(SSBMF{:,12});
+AggA=max(Agg{:,12});
+
+%Create the maximum value of active power in separate tables for Phase B
+TGB=max(DBTG{:,13});
+T1B=max(DBT1{:,13});
+ML1B=max(DBML1{:,13});
+ML2B=max(DBML2{:,13});
+ACB=max(CPAC{:,13});
+EMSB1B=max(EMSB1{:,13});
+MFB=max(SSBMF{:,13});
+AggB=max(Agg{:,13});
+
+%Create the maximum value of active power in separate tables for Phase C
+TGC=max(DBTG{:,14});
+T1C=max(DBT1{:,14});
+ML1C=max(DBML1{:,14});
+ML2C=max(DBML2{:,14});
+ACC=max(CPAC{:,14});
+EMSB1C=max(EMSB1{:,14});
+MFC=max(SSBMF{:,14});
+AggC=max(Agg{:,14});
+
+%sum the the maximum values for each DB
+TG=TGA+TGB+TGC;
+T1=T1A+T1B+T1C;
+ML1=ML1A+ML1B+ML1C;
+ML2=ML2A+ML2B+ML2C;
+AC=ACA+ACB+ACC;
+EMSB=EMSB1A+EMSB1B+EMSB1C;
+MF=MFA+MFB+MFC;
+Ag=AggA+AggB+AggC;
+
+%% -------------- Plotting the bar graph of measured and designed circuits-----------------------
+
+
+MD_Measured_data = [TG T1 ML1 ML2 AC EMSB MF Ag];
+%From the designed circuits in Table 2, we put the values for the MD
+MD_calculated = [6870 7650 17220 17220 33500 32620 98580 205810];
+%label the x-axis for the name of the DBs
+xlables = ["DB TG" "DB T1" "DB ML 1" "DB ML 2" "CP AC" "EMSB 1" "SSB MF" "Aggregate"];
+
+bar([MD_Measured_data;MD_calculated].')
+ax = gca;
+ax.YAxis.Exponent = 3;
+xticklabels(xlables)
+ylabel({'Maximum demand (kW)'},'FontSize', 10)
+grid, grid minor
+legend({'Measured power','Designed power'},'NumColumns',2)
